@@ -1,7 +1,11 @@
+// IMPORTS
 const express = require('express');
 const path = require('path');
+
+// VARIABLES
 const app = express();
 const port = process.env.PORT || 8080;
+const dataDb = '../../data/db/data.json';
 
 // Log Middleware
 app.use((req, res, next) => {
@@ -13,8 +17,7 @@ app.use((req, res, next) => {
 app.use(express.static(path.join(__dirname, '../template')));
 
 // API route for the json data
-const data = require('../../data/db/data.json');
-app.get('/data', (req, res) => res.json(data));
+app.get('/data', (req, res) => res.json(dataDb));
 
 app.listen(port, () => {
     console.log(`Server start on http://localhost:${port}`);
