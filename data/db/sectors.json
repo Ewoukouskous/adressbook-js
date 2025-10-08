@@ -1,0 +1,100 @@
+{
+  "sectors": [
+    {
+      "name": "Informatique",
+      "years": [
+        { "year": "B1", "price": 7800 },
+        { "year": "B2", "price": 8400 },
+        { "year": "B3", "price": 8400 },
+        { "year": "M1", "price": 9000 },
+        { "year": "M2", "price": 9000 }
+      ]
+    },
+    {
+      "name": "Cybersécurité",
+      "years": [
+        { "year": "B1", "price": 7800 },
+        { "year": "B2", "price": 8400 },
+        { "year": "B3", "price": 8400 },
+        { "year": "M1", "price": 9000 },
+        { "year": "M2", "price": 9000 }
+      ]
+    },
+    {
+      "name": "Audiovisuel",
+      "years": [
+        { "year": "B1", "price": 8100 },
+        { "year": "B2", "price": 8600 },
+        { "year": "B3", "price": 8600 }
+      ]
+    },
+    {
+      "name": "Création & Design Digital",
+      "years": [
+        { "year": "B1", "price": 7200 },
+        { "year": "B2", "price": 7800 },
+        { "year": "B3", "price": 8000 },
+        { "year": "M1", "price": 8600 },
+        { "year": "M2", "price": 8600 }
+      ]
+    },
+    {
+      "name": "Architecture d'Intérieur",
+      "years": [
+        { "year": "B1", "price": 7800 },
+        { "year": "B2", "price": 8300 },
+        { "year": "B3", "price": 8300 },
+        { "year": "M1", "price": 8900 },
+        { "year": "M2", "price": 8900 }
+      ]
+    },
+    {
+      "name": "3D Animation, Jeux Vidéo",
+      "years": [
+        { "year": "B1", "price": 7800 },
+        { "year": "B2", "price": 8300 },
+        { "year": "B3", "price": 8300 },
+        { "year": "M1", "price": 8900 },
+        { "year": "M2", "price": 8900 }
+      ]
+    },
+    {
+      "name": "Bâtiment Numérique",
+      "years": [
+        { "year": "B3", "price": 8300 },
+        { "year": "M1", "price": 8900 },
+        { "year": "M2", "price": 8900 }
+      ]
+    },
+    {
+      "name": "Intelligence Artificielle & Data",
+      "years": [
+        { "year": "B1", "price": 7800 },
+        { "year": "B2", "price": 8400 },
+        { "year": "B3", "price": 8400 },
+        { "year": "M1", "price": 9000 },
+        { "year": "M2", "price": 9000 }
+      ]
+    },
+    {
+      "name": "Marketing & Communication Digitale",
+      "years": [
+        { "year": "B1", "price": 7200 },
+        { "year": "B2", "price": 7800 },
+        { "year": "B3", "price": 8000 },
+        { "year": "M1", "price": 8600 },
+        { "year": "M2", "price": 8600 }
+      ]
+    },
+    {
+      "name": "Tech & Business",
+      "years": [
+        { "year": "B1", "price": 7200 },
+        { "year": "B2", "price": 7800 },
+        { "year": "B3", "price": 8000 },
+        { "year": "M1", "price": 8600 },
+        { "year": "M2", "price": 8600 }
+      ]
+    }
+  ]
+}
