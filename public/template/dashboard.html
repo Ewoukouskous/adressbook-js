@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tête de Salomé - Prospects</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-white text-blue-800 min-h-screen flex flex-col">
+
+<!-- Header -->
+<header class="bg-blue-600 text-white p-6 shadow-md">
+    <h1 class="text-2xl font-bold tracking-wide mb-4">LOGO SALOME A ADD</h1>
+</header>
+
+<!-- Main Content -->
+<main class="flex-1 p-8 flex flex-col gap-6">
+
+    <!-- Ligne slogan + bouton -->
+    <div class="flex justify-between items-center">
+        <p class="text-lg font-medium">
+            Bonjour, c’est <span class="font-semibold">Salomé Berry</span> de
+            <span class="italic">Toulouse Ynov Campus</span>
+        </p>
+        <button id="openAddModal" class="bg-blue text-white-700 font-semibold px-6 py-2 rounded-lg shadow-md hover:bg-blue-100 transition">
+            Ajouter un prospect
+        </button>
+    </div>
+
+    <!-- Tableau scrollable -->
+    <div class="overflow-x-auto border border-blue-200 rounded-lg shadow-md">
+        <table class="min-w-full text-left text-sm">
+            <thead class="bg-blue-100 text-blue-800 uppercase text-xs font-semibold">
+            <tr>
+                <th class="px-6 py-3">Nom</th>
+                <th class="px-6 py-3">Prénom</th>
+                <th class="px-6 py-3">Email</th>
+                <th class="px-6 py-3">Téléphone</th>
+                <th class="px-6 py-3">Statut</th>
+                <th class="px-6 py-3 text-center">Actions</th>
+            </tr>
+            </thead>
+            <tbody class="divide-y divide-blue-100">
+            <tr class="hover:bg-blue-50">
+                <td class="px-6 py-3">Dupont</td>
+                <td class="px-6 py-3">Marie</td>
+                <td class="px-6 py-3">marie.dupont@example.com</td>
+                <td class="px-6 py-3">06 12 34 56 78</td>
+                <td class="px-6 py-3">En attente</td>
+                <td class="px-6 py-3 text-center space-x-2">
+                    <button id="openUpdateModal" class="bg-blue-500 hover:bg-blue-600 text-white px-3 py-1 rounded-md text-xs">Update</button>
+                    <button id="openDeleteModal" class="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded-md text-xs">Delete</button>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+
+</main>
+
+<!-- Footer -->
+<footer class="bg-blue-600 text-white text-center py-4 text-sm shadow-inner">
+    © Réalisé par Amiard Renaud et Lefebvre Nino
+</footer>
+
+<!-- Modales -->
+<div id="addModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
+    <div class="bg-white p-6 rounded-xl shadow-lg w-96">
+        <h2 class="text-xl font-bold mb-4 text-blue-700">Ajouter un prospect</h2>
+        <form class="flex flex-col gap-3">
+            <input type="text" placeholder="Nom" class="border border-blue-300 rounded p-2">
+            <input type="text" placeholder="Prénom" class="border border-blue-300 rounded p-2">
+            <input type="email" placeholder="Email" class="border border-blue-300 rounded p-2">
+            <input type="tel" placeholder="Téléphone" class="border border-blue-300 rounded p-2">
+            <button type="submit" class="bg-blue-600 text-white rounded p-2 hover:bg-blue-700">Enregistrer</button>
+        </form>
+        <button id="closeAddModal" class="mt-4 text-blue-600 hover:underline">Fermer</button>
+    </div>
+</div>
+
+<div id="updateModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
+    <div class="bg-white p-6 rounded-xl shadow-lg w-96">
+        <h2 class="text-xl font-bold mb-4 text-blue-700">Modifier le prospect</h2>
+        <form class="flex flex-col gap-3">
+            <input type="text" value="Dupont" class="border border-blue-300 rounded p-2">
+            <input type="text" value="Marie" class="border border-blue-300 rounded p-2">
+            <input type="email" value="marie.dupont@example.com" class="border border-blue-300 rounded p-2">
+            <button type="submit" class="bg-blue-600 text-white rounded p-2 hover:bg-blue-700">Mettre à jour</button>
+        </form>
+        <button id="closeUpdateModal" class="mt-4 text-blue-600 hover:underline">Fermer</button>
+    </div>
+</div>
+
+<div id="deleteModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
+    <div class="bg-white p-6 rounded-xl shadow-lg w-80 text-center">
+        <h2 class="text-lg font-bold text-blue-700 mb-4">Supprimer le prospect ?</h2>
+        <p class="text-sm mb-6">Cette action est irréversible.</p>
+        <div class="flex justify-center gap-4">
+            <button class="bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700">Supprimer</button>
+            <button id="closeDeleteModal" class="bg-gray-200 text-blue-700 px-4 py-2 rounded hover:bg-gray-300">Annuler</button>
+        </div>
+    </div>
+</div>
+
+<!-- Script gestion modales -->
+<script>
+    const toggleModal = (id, show) => {
+        document.getElementById(id).classList.toggle('hidden', !show);
+    };
+
+    document.getElementById('openAddModal').onclick = () => toggleModal('addModal', true);
+    document.getElementById('closeAddModal').onclick = () => toggleModal('addModal', false);
+
+    document.getElementById('openUpdateModal').onclick = () => toggleModal('updateModal', true);
+    document.getElementById('closeUpdateModal').onclick = () => toggleModal('updateModal', false);
+
+    document.getElementById('openDeleteModal').onclick = () => toggleModal('deleteModal', true);
+    document.getElementById('closeDeleteModal').onclick = () => toggleModal('deleteModal', false);
+</script>
+
+</body>
+</html>
