@@ -14,8 +14,15 @@ app.use((req, res, next) => {
     next();
 });
 
-// Serve the HTML file
-app.use(express.static(path.join(__dirname, '../pages')));
+// Serve dashboard.html at the root URL
+app.get('/', (req, res) => {
+    res.sendFile(path.join(__dirname, '../../public/pages/dashboard.html'));
+});
+
+// Serve statics files
+app.use(express.static(path.join(__dirname, '../../public')));
+app.use('/script', express.static(path.join(__dirname, '../script')));
+
 
 // API route for the json data
 const data = require('../../data/db/data.json');
