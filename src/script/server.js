@@ -1,12 +1,15 @@
-// IMPORTS
+// Automatically load the .env file
+require('dotenv').config();
+
 const express = require('express');
 const path = require('path');
-const sectorsCRUD = require('../utils/sectorsCRUD');
 
 // VARIABLES
 const app = express();
+// If there's no env var, we use the 8080 port
 const port = process.env.PORT || 8080;
 const dataDb = 'data/db/data.json';
+
 
 // Log Middleware
 app.use((req, res, next) => {
@@ -15,10 +18,11 @@ app.use((req, res, next) => {
 });
 
 // Serve the HTML file
-app.use(express.static(path.join(__dirname, '../template')));
+app.use(express.static(path.join(__dirname, '../pages')));
 
 // API route for the json data
-app.get('/data', (req, res) => res.json(dataDb));
+const data = require('../../data/db/data.json');
+app.get('/data', (req, res) => res.json(data));
 
 
 // API route for the sectors data json object
