@@ -1,4 +1,4 @@
-// Automatically loa the .env file
+// Automatically load the .env file
 require('dotenv').config();
 
 const express = require('express');
