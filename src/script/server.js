@@ -1,6 +1,11 @@
+// Automatically loa the .env file
+require('dotenv').config();
+
 const express = require('express');
 const path = require('path');
 const app = express();
+
+// If there's no env var, we use the 8080 port
 const port = process.env.PORT || 8080;
 
 // Log Middleware
@@ -10,7 +15,7 @@ app.use((req, res, next) => {
 });
 
 // Serve the HTML file
-app.use(express.static(path.join(__dirname, '../template')));
+app.use(express.static(path.join(__dirname, '../pages')));
 
 // API route for the json data
 const data = require('../../data/db/data.json');
