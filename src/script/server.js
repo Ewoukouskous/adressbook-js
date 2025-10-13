@@ -1,13 +1,12 @@
 // IMPORTS
 const express = require('express');
 const path = require('path');
-const readJsonFile = require('../utils/readJsonFile');
+const sectorsCRUD = require('../utils/sectorsCRUD');
 
 // VARIABLES
 const app = express();
 const port = process.env.PORT || 8080;
 const dataDb = 'data/db/data.json';
-const sectorsDb = 'data/db/sectors.json';
 
 // Log Middleware
 app.use((req, res, next) => {
@@ -22,13 +21,28 @@ app.use(express.static(path.join(__dirname, '../template')));
 app.get('/data', (req, res) => res.json(dataDb));
 
 
-app.get('/sectors', (req, res) => {
-    let jsonResponse = readJsonFile(sectorsDb);
-    if (jsonResponse) {
-        res.send(jsonResponse);
+// API route for the sectors data json object
+app.get('/api/sectors', (req, res) => {
+
+    // If there is an id query param, get the sector by id
+    const searchId = req.query.id;
+    if (searchId) {
+        const sectorData = sectorsCRUD.getSectorById(searchId);
+        if (sectorData) {
+            res.json(sectorData);
+        } else {
+            res.status(404).send('Sector not found');
+        }
+        // If there is no id query param, get all sectors
     } else {
-        res.status(404).send('Sectors data not found');
+        const sectorsData = sectorsCRUD.getAllSectors()
+        if (sectorsData) {
+            res.json(sectorsData);
+        } else {
+            res.status(404).send('Sectors data not found');
+        }
     }
+    return null
 });
 
 app.listen(port, () => {
