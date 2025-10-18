@@ -58,26 +58,32 @@ app.get('/api/sectors', (req, res) => {
 app.get('/api/prospects', (req, res) => {
     // If there is an id query param, get the sector by id
     const searchId = req.query.id;
+    const sectorId = req.query.sectorId;
 
     if (searchId) {
         const prospectData = prospectsCRUD.getProspectById(searchId);
         if (prospectData) {
             res.json(prospectData);
         } else {
-            res.status(404).send('Prospect not found');
+            return res.status(404).send('Prospect not found');
+        }
+    } else if (sectorId) {
+        const prospectsData = prospectsCRUD.getProspectsBySectorId(sectorId);
+        if (prospectsData) {
+            res.json(prospectsData);
+        } else {
+            return res.status(404).send('No prospects found for the given sectorWatchedId');
         }
     }
-
     // If there is no id query param, get all prospects
     else {
         const prospectsData = prospectsCRUD.getAllProspects()
         if (prospectsData) {
             res.json(prospectsData);
         } else {
-            res.status(404).send('Prospects data not found');
+            return res.status(404).send('Prospects data not found');
         }
     }
-    return null
 });
 
 app.post('/api/create-prospect', (req, res) => {
