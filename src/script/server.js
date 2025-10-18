@@ -13,6 +13,8 @@ const app = express();
 const port = process.env.PORT || 8080;
 const dataDb = 'data/db/data.json';
 
+// Middleware to parse JSON bodies
+app.use(express.json());
 
 // Log Middleware
 app.use((req, res, next) => {
@@ -25,6 +27,7 @@ app.use(express.static(path.join(__dirname, '../pages')));
 
 // API route for the json data
 const data = require('../../data/db/data.json');
+const {createProspect, getAllProspects} = require("../utils/prospectsCRUD");
 app.get('/data', (req, res) => res.json(data));
 
 
@@ -75,6 +78,42 @@ app.get('/api/prospects', (req, res) => {
         }
     }
     return null
+});
+
+app.post('/api/create-prospect', (req, res) => {
+    // Generate a new prospect object
+    const newProspect = {
+        id: null,
+        firstName: req.body.firstName,
+        lastName: req.body.lastName,
+        sectorWatchedId: req.body.sectorWatchedId,
+        email: req.body.email,
+        phone: req.body.phone,
+        city: req.body.city
+    }
+
+    // Sanitize and analyse the new prospect
+    let sanitizedProspect = prospectsCRUD.analyseAndSanitizeProspect(newProspect);
+
+    if (sanitizedProspect instanceof Error) {
+        console.error('PROSPECT CREATION LOG: ERROR while analysing the new prospect: ' + sanitizedProspect.message)
+        return res.status(400).send(sanitizedProspect.message);
+    }
+
+    // Once we are sure that the prospect is valid, we can proceed to create it
+
+    // Assign an ID to the new prospect by getting the last prospect ID and adding 1
+    newProspect.id = getAllProspects()[getAllProspects().length - 1].id + 1;
+
+    // Create the new prospect
+    const creationResult = createProspect(newProspect);
+    if (creationResult === null) {
+        return res.status(500).send('Error creating prospect');
+    } else {
+        console.log("PROSPECT CREATION LOG: New prospect created with ID " + newProspect.id);
+        return res.status(201).json(newProspect);
+    }
+
 });
 
 app.listen(port, () => {
