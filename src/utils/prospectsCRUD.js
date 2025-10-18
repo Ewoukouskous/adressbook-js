@@ -1,5 +1,6 @@
 require('dotenv').config();
 const readJsonFile = require("./readJsonFile.js");
+const {getSectorById} = require("./sectorsCRUD");
 
 /* Function that will analyse and sanitize a prospect object before adding it to the database
 if the prospect is invalid we return an error message else we return the sanatized prospect object */
@@ -23,21 +24,63 @@ function analyseAndSanitizeProspect(prospect) {
     prospect.city = prospect.city[0].toUpperCase() + prospect.city.slice(1).toLowerCase();
 
     // Check that sectorWatchedId is a number and corresponds to an existing sector
-    const sectorId = parseInt(prospect.sectorWatchedId);
-    if (isNaN(sectorId) || !sectorsCRUD.getSectorById(sectorId)) {
-        return new Error('Invalid sectorWatchedId');
+    if (getSectorById(prospect.sectorWatchedId) == null){
+        return new Error('sectorWatchedId does not correspond to an existing sector');
     }
 
     // Check that email is a valid email
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(prospect.email)) {
+    if (verifyEmail(prospect.email) instanceof Error) {
         return new Error('Invalid email format');
     }
 
+    // Check that email is unique
+    if (verifyEmailUniqueness(prospect.email) instanceof Error) {
+        return new Error('Email already exists in the database');
+    }
+
+    // Check that phone is a valid phone number (french format +33 6 or +33 7)
+    if (verifyPhone(prospect.phone) instanceof Error) {
+        return new Error('Invalid phone format. Use +33 6XXXXXXXX or +33 7XXXXXXXX');
+    }
+
+    // Check that phone is unique
+    if (verifyPhoneUniqueness(prospect.phone) instanceof Error) {
+        return new Error('Phone number already exists in the database');
+    }
+}
+
+// Verify email format
+function verifyEmail(email) {
+    // Check that email is a valid email
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+        return new Error('Invalid email format');
+    }
+}
+
+// Verify email uniqueness
+function verifyEmailUniqueness(email) {
+    const allProspects = getAllProspects();
+    let doesExist = allProspects.find(prospect => prospect.email === email);
+    if (doesExist) {
+        return new Error('Email already exists in the database');
+    }
+}
+
+// Verify phone format (french format, only 06 and 07 numbers)
+function verifyPhone(phone) {
     // Check that phone is a valid phone number (french format +33 6 or +33 7)
     const phoneRegex = /^\+33[67]\d{8}$/;
-    if (!phoneRegex.test(prospect.phone)) {
+    if (!phoneRegex.test(phone)) {
         return new Error('Invalid phone format. Use +33 6XXXXXXXX or +33 7XXXXXXXX');
+    }
+}
+
+function verifyPhoneUniqueness(phone) {
+    const allProspects = getAllProspects();
+    let doesExist = allProspects.find(prospect => prospect.phone === phone);
+    if (doesExist) {
+        return new Error('Phone number already exists in the database');
     }
 }
 
@@ -45,6 +88,7 @@ function analyseAndSanitizeProspect(prospect) {
 /* ==================================================
                      GETS CRUDS
 ===================================================== */
+
 // Function to get all the prospects from the JSON database
 function getAllProspects() {
     const prospectsData = readJsonFile(process.env.PROSPECTS_DB_PATH);
@@ -116,7 +160,7 @@ function deleteProspectById(id) {
         // If there is no old data, we return an error
         if (!oldJsonData) {
             console.error('PROSPECT DELETION LOG: ERROR Prospects data not found');
-            return new Error ('PROSPECT DELETION LOG: Prospects data not found');
+            return new Error('PROSPECT DELETION LOG: Prospects data not found');
         }
 
         // We remove the new json data to the old one.
@@ -136,8 +180,9 @@ function deleteProspectById(id) {
 
     } catch (err) {
         console.error(`PROSPECT DELETION LOG: Error writing JSON file at ${filePath}:`, err);
-        return new Error (`PROSPECT DELETION LOG: Error writing JSON file at ${filePath}: ${err.message}`);;
+        return new Error(`PROSPECT DELETION LOG: Error writing JSON file at ${filePath}: ${err.message}`);
+        ;
     }
 }
 
-module.exports = {getAllProspects, getProspectById, createProspect, deleteProspectById,analyseAndSanitizeProspect};
+module.exports = {getAllProspects, getProspectById, createProspect, deleteProspectById, analyseAndSanitizeProspect};
