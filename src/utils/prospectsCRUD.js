@@ -24,7 +24,7 @@ function getProspectById(id) {
     }
 
     // Read the specified prospect data
-    const prospectsData = readJsonFile(process.env.PROSPECTS_DB_PATH).prospects[prospectId];
+    const prospectsData = readJsonFile(process.env.PROSPECTS_DB_PATH).prospects.find(prospect => prospect.id === prospectId);
     // Check if the prospect exists, if not return null
     if (prospectsData) {
         console.log(prospectsData);
@@ -34,9 +34,5 @@ function getProspectById(id) {
 
 /* ==================================================
 ===================================================== */
-
-function createProspect(prospect) {
-
-}
 
 module.exports = {getAllProspects, getProspectById};

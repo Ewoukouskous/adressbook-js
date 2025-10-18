@@ -1,17 +1,19 @@
 {
   "prospects": [
     {
+      "id": 1,
       "firstName": "Jane",
       "lastName": "Doe",
-      "sectorWatched": "Cybersécurité",
+      "sectorWatchedId": 2,
       "email": "jane.doe@example.com",
       "phone": "+33612345678",
       "city": "Toulouse"
     },
     {
+      "id": 2,
       "firstName": "John",
       "lastName": "Smith",
-      "sectorWatched": "Informatique",
+      "sectorWatchedId": 1,
       "email": "john.smith@example.com",
       "phone": "+33612345678",
       "city": "Montaudran"
