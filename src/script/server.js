@@ -1,8 +1,11 @@
 // Automatically load the .env file
 require('dotenv').config();
 
+// IMPORTS
 const express = require('express');
 const path = require('path');
+const sectorsCRUD = require('../utils/sectorsCRUD.js');
+const prospectsCRUD = require('../utils/prospectsCRUD.js');
 
 // VARIABLES
 const app = express();
@@ -44,6 +47,31 @@ app.get('/api/sectors', (req, res) => {
             res.json(sectorsData);
         } else {
             res.status(404).send('Sectors data not found');
+        }
+    }
+    return null
+});
+
+app.get('/api/prospects', (req, res) => {
+    // If there is an id query param, get the sector by id
+    const searchId = req.query.id;
+
+    if (searchId) {
+        const prospectData = prospectsCRUD.getProspectById(searchId);
+        if (prospectData) {
+            res.json(prospectData);
+        } else {
+            res.status(404).send('Prospect not found');
+        }
+    }
+
+    // If there is no id query param, get all prospects
+    else {
+        const prospectsData = prospectsCRUD.getAllProspects()
+        if (prospectsData) {
+            res.json(prospectsData);
+        } else {
+            res.status(404).send('Prospects data not found');
         }
     }
     return null
