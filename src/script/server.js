@@ -27,7 +27,7 @@ app.use(express.static(path.join(__dirname, '../pages')));
 
 // API route for the json data
 const data = require('../../data/db/data.json');
-const {createProspect, getAllProspects} = require("../utils/prospectsCRUD");
+const {createProspect, getAllProspects, updateProspectById} = require("../utils/prospectsCRUD");
 app.get('/data', (req, res) => res.json(data));
 
 
@@ -134,6 +134,29 @@ app.delete('/api/delete-prospect', (req, res) => {
     }
 
 });
+
+app.patch('/api/update-prospect', (req, res) => {
+
+    // Check that the id provided is a number
+    const prospectId = parseInt(req.body.id);
+    if (isNaN(prospectId)) {
+        return res.status(400).send('PROSPECT UPDATE LOG: Invalid type for prospect ID');
+    }
+
+    // Proceed to update the prospect and check if the update was successful
+    const updateProspect = updateProspectById(prospectId, req.body);
+
+    if (updateProspect instanceof Error) {
+        console.error('PROSPECT UPDATE LOG: ERROR while updating the prospect: ' + updateProspect.message)
+        return res.status(500).send(updateProspect.message);
+    } else {
+        console.log(`PROSPECT UPDATE LOG: Prospect with ID ${prospectId} updated successfully.`);
+        return res.status(200).json(updateProspect);
+    }
+
+});
+
+
 
 app.listen(port, () => {
     console.log(`Server start on http://localhost:${port}`);
