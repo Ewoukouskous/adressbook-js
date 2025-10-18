@@ -116,6 +116,25 @@ app.post('/api/create-prospect', (req, res) => {
 
 });
 
+app.delete('/api/delete-prospect', (req, res) => {
+
+    // Check that the id provided is a number
+    const prospectId = parseInt(req.body.id);
+    if (isNaN(prospectId)) {
+        return res.status(400).send('PROSPECT DELETION LOG: Invalid type for prospect ID');
+    }
+
+    // Proceed to delete the prospect and check if the deletion was successful
+    const deletionResult = prospectsCRUD.deleteProspectById(prospectId);
+    if (deletionResult === true) {
+        console.log(`PROSPECT DELETION LOG: Prospect with ID ${prospectId} deleted successfully.`);
+        return res.status(200).send(`Prospect with ID ${prospectId} deleted successfully.`);
+    } else {
+        return res.status(500).send(deletionResult.message);
+    }
+
+});
+
 app.listen(port, () => {
     console.log(`Server start on http://localhost:${port}`);
 });
