@@ -100,4 +100,44 @@ function createProspect(prospect) {
     }
 }
 
-module.exports = {getAllProspects, getProspectById, createProspect, analyseAndSanitizeProspect};
+function deleteProspectById(id) {
+    const fs = require('fs');
+    const filePath = process.env.PROSPECTS_DB_PATH;
+    const prospectId = parseInt(id);
+
+    if (isNaN(prospectId)) {
+        console.error("PROSPECT DELETION LOG: ERROR Prospect id is not a number:", id);
+        return new Error('PROSPECT DELETION LOG: Prospect id is not a number');
+    }
+
+    try {
+        // We start by getting the full JSON file
+        const oldJsonData = readJsonFile(filePath);
+        // If there is no old data, we return an error
+        if (!oldJsonData) {
+            console.error('PROSPECT DELETION LOG: ERROR Prospects data not found');
+            return new Error ('PROSPECT DELETION LOG: Prospects data not found');
+        }
+
+        // We remove the new json data to the old one.
+        let prospectIndex = oldJsonData.prospects.findIndex(prospect => prospect.id === id);
+        oldJsonData.prospects.splice(prospectIndex, 1);
+
+        // If the prospect index is not found 'findIndex' returns -1
+        if (prospectIndex === -1) {
+            console.error(`PROSPECT DELETION LOG: ERROR Prospect with id ${id} not found`);
+            return new Error(`PROSPECT DELETION LOG: Prospect with id ${id} not found`);
+        }
+
+        // We write the updated data back to the file
+        fs.writeFileSync(filePath, JSON.stringify(oldJsonData, null, 2), 'utf8');
+        console.log(`PROSPECT DELETION LOG: Successfully wrote data to ${filePath}`);
+        return true;
+
+    } catch (err) {
+        console.error(`PROSPECT DELETION LOG: Error writing JSON file at ${filePath}:`, err);
+        return new Error (`PROSPECT DELETION LOG: Error writing JSON file at ${filePath}: ${err.message}`);;
+    }
+}
+
+module.exports = {getAllProspects, getProspectById, createProspect, deleteProspectById,analyseAndSanitizeProspect};
