@@ -197,6 +197,100 @@ function deleteProspectById(id) {
     }
 }
 
+function updateProspectById(prospectId, prospectData) {
+    const fs = require('fs');
+    const filePath = process.env.PROSPECTS_DB_PATH;
+    const fieldsUpdatable = ['firstName', 'lastName', 'sectorWatchedId', 'email', 'phone', 'city'];
+
+    if (isNaN(prospectId)) {
+        console.error("PROSPECT UPDATE LOG: ERROR Prospect id is not a number:", prospectId);
+        return new Error('PROSPECT UPDATE LOG: Prospect id is not a number');
+    }
+
+    // We start by getting the full JSON file
+    const oldJsonData = readJsonFile(filePath);
+    // If there is no old data, we return an error
+    if (!oldJsonData) {
+        console.error('PROSPECT UPDATE LOG: ERROR Prospects data not found');
+        return new Error('PROSPECT UPDATE LOG: Prospects data not found');
+    }
+
+    // We start by getting the prospect data to update
+    let prospectToUpdate = oldJsonData.prospects.find(prospect => prospect.id === prospectId);
+    if (!prospectToUpdate) {
+        console.error(`PROSPECT UPDATE LOG: ERROR Prospect with id ${prospectId} not found`);
+        return new Error(`PROSPECT UPDATE LOG: Prospect with id ${prospectId} not found`);
+    }
+
+    for (const field of fieldsUpdatable) {
+        if (prospectData.hasOwnProperty(field)) {
+
+            if (prospectData[field] === prospectToUpdate[field]) {
+                return new Error (`Field ${field} is the same as the current value`);
+            }
+
+            // If the current field is not 'sectorWatchedId', we check that it's a string and do other sanitizations
+            if (field !== 'sectorWatchedId') {
+                if (typeof prospectData[field] !== 'string') {
+                    return new Error(`Field ${field} must be a string`);
+                }
+
+                // Perform any necessary validation or sanitization here
+                switch (field) {
+                    case 'firstName':
+                        prospectToUpdate[field] = sanitizeFirstName(prospectData[field]);
+                        continue;
+                    case 'lastName':
+                        prospectToUpdate[field] = sanitizeLastName(prospectData[field]);
+                        continue;
+                    case 'email':
+                        if (verifyEmail(prospectData[field]) instanceof Error) {
+                            return new Error('Invalid email format');
+                        }
+                        if (verifyEmailUniqueness(prospectData[field]) instanceof Error) {
+                            return new Error('Email already exists in the database');
+                        }
+                        prospectToUpdate[field] = prospectData[field];
+                        continue;
+                    case 'phone':
+                        if (verifyPhone(prospectData[field]) instanceof Error) {
+                            return new Error('Invalid phone format. Use +33 6XXXXXXXX or +33 7XXXXXXXX');
+                        }
+                        if (verifyPhoneUniqueness(prospectData[field]) instanceof Error) {
+                            return new Error('Phone number already exists in the database');
+                        }
+                        prospectToUpdate[field] = prospectData[field];
+                        continue;
+                    case 'city':
+                        prospectToUpdate[field] = sanitizeCity(prospectData[field]);
+                }
+            } else {
+                // Check that sectorWatchedId corresponds to an existing sector
+                if (getSectorById(prospectData[field]) == null){
+                    return new Error('sectorWatchedId does not correspond to an existing sector');
+                }
+                prospectToUpdate[field] = prospectData[field];
+            }
+        }
+    }
+
+    // We write the updated prospect back to the database
+    try {
+
+        // We remove the old prospect data to replace it by the new.
+        let prospectIndex = oldJsonData.prospects.findIndex(prospect => prospect.id === prospectId);
+        oldJsonData.prospects[prospectIndex] = prospectToUpdate;
+
+        // We write the updated data back to the file
+        fs.writeFileSync(filePath, JSON.stringify(oldJsonData, null, 2), 'utf8');
+        console.log(`PROSPECT UPDATE LOG: Successfully wrote data to ${filePath}`);
+        return prospectToUpdate;
+
+    } catch (err) {
+        console.error(`PROSPECT UPDATE LOG: Error writing JSON file at ${filePath}:`, err);
+        return new Error(`PROSPECT UPDATE LOG: Error writing JSON file at ${filePath}: ${err.message}`);
+    }
+}
 
 
-module.exports = {getAllProspects, getProspectById, createProspect, deleteProspectById, analyseAndSanitizeProspect};
+module.exports = {getAllProspects, getProspectById, createProspect, deleteProspectById, updateProspectById, analyseAndSanitizeProspect};
