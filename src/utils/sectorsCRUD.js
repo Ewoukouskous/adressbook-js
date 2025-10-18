@@ -23,7 +23,7 @@ function getSectorById(id) {
     }
 
     // Read the specified sector data
-    const sectorsData = readJsonFile(process.env.SECTORS_DB_PATH).sectors[sectorId];
+    const sectorsData = readJsonFile(process.env.SECTORS_DB_PATH).sectors.find(sector => sector.id === sectorId);
     // Check if the sector exists, if not return null
     if (sectorsData) {
         console.log(sectorsData);
