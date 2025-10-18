@@ -1,12 +1,11 @@
 require('dotenv').config();
 const readJsonFile = require("./readJsonFile.js");
 const {getSectorById} = require("./sectorsCRUD");
+const fs = require("fs");
 
 /* Function that will analyse and sanitize a prospect object before adding it to the database
 if the prospect is invalid we return an error message else we return the sanatized prospect object */
 function analyseAndSanitizeProspect(prospect) {
-    const sectorsCRUD = require("./sectorsCRUD.js");
-
     // Check that all fields are not null or undefined.
     for (const key in prospect) {
         if ((prospect[key] === null || prospect[key] === undefined) && key !== 'id') {
@@ -47,6 +46,21 @@ function analyseAndSanitizeProspect(prospect) {
     if (verifyPhoneUniqueness(prospect.phone) instanceof Error) {
         return new Error('Phone number already exists in the database');
     }
+}
+
+function sanitizeFirstName(firstName) {
+    // Capitalize first letter of firstName
+    return firstName[0].toUpperCase() + firstName.slice(1).toLowerCase();
+}
+
+function sanitizeLastName(lastName) {
+    // Capitalize first letter of lastName
+    return lastName[0].toUpperCase() + lastName.slice(1).toLowerCase();
+}
+
+function sanitizeCity(city) {
+    // Capitalize first letter of city
+    return city[0].toUpperCase() + city.slice(1).toLowerCase();
 }
 
 // Verify email format
@@ -112,7 +126,6 @@ function getProspectById(id) {
     const prospectsData = readJsonFile(process.env.PROSPECTS_DB_PATH).prospects.find(prospect => prospect.id === prospectId);
     // Check if the prospect exists, if not return null
     if (prospectsData) {
-        console.log(prospectsData);
         return prospectsData;
     } else return null;
 }
@@ -181,8 +194,9 @@ function deleteProspectById(id) {
     } catch (err) {
         console.error(`PROSPECT DELETION LOG: Error writing JSON file at ${filePath}:`, err);
         return new Error(`PROSPECT DELETION LOG: Error writing JSON file at ${filePath}: ${err.message}`);
-        ;
     }
 }
+
+
 
 module.exports = {getAllProspects, getProspectById, createProspect, deleteProspectById, analyseAndSanitizeProspect};
