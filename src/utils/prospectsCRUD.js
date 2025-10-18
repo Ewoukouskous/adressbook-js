@@ -1,7 +1,6 @@
 require('dotenv').config();
 const readJsonFile = require("./readJsonFile.js");
 const {getSectorById} = require("./sectorsCRUD");
-const fs = require("fs");
 
 /* Function that will analyse and sanitize a prospect object before adding it to the database
 if the prospect is invalid we return an error message else we return the sanatized prospect object */
@@ -124,6 +123,22 @@ function getProspectById(id) {
 
     // Read the specified prospect data
     const prospectsData = readJsonFile(process.env.PROSPECTS_DB_PATH).prospects.find(prospect => prospect.id === prospectId);
+    // Check if the prospect exists, if not return null
+    if (prospectsData) {
+        return prospectsData;
+    } else return null;
+}
+
+function getProspectsBySectorId(sectorId) {
+    // Ensure the id is a number
+    const prospectSectorId = parseInt(sectorId);
+    if (isNaN(prospectSectorId)) {
+        console.error("PROSPECT GET BY SECTOR ID LOG: ERROR Sector id is not a number:", sectorId);
+        return null;
+    }
+
+    // Read the specified prospect data
+    const prospectsData = readJsonFile(process.env.PROSPECTS_DB_PATH).prospects.filter(prospect => prospect.sectorWatchedId === prospectSectorId);
     // Check if the prospect exists, if not return null
     if (prospectsData) {
         return prospectsData;
@@ -293,4 +308,4 @@ function updateProspectById(prospectId, prospectData) {
 }
 
 
-module.exports = {getAllProspects, getProspectById, createProspect, deleteProspectById, updateProspectById, analyseAndSanitizeProspect};
+module.exports = {getAllProspects, getProspectById, getProspectsBySectorId, createProspect, deleteProspectById, updateProspectById, analyseAndSanitizeProspect};
