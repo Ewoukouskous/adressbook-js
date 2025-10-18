@@ -1,6 +1,7 @@
 {
   "sectors": [
     {
+      "id": 1,
       "name": "Informatique",
       "years": [
         { "year": "B1", "price": 7800 },
@@ -11,6 +12,7 @@
       ]
     },
     {
+      "id": 2,
       "name": "Cybersécurité",
       "years": [
         { "year": "B1", "price": 7800 },
@@ -21,6 +23,7 @@
       ]
     },
     {
+      "id": 3,
       "name": "Audiovisuel",
       "years": [
         { "year": "B1", "price": 8100 },
@@ -29,6 +32,7 @@
       ]
     },
     {
+      "id": 4,
       "name": "Création & Design Digital",
       "years": [
         { "year": "B1", "price": 7200 },
@@ -39,6 +43,7 @@
       ]
     },
     {
+      "id": 5,
       "name": "Architecture d'Intérieur",
       "years": [
         { "year": "B1", "price": 7800 },
@@ -49,6 +54,7 @@
       ]
     },
     {
+      "id": 6,
       "name": "3D Animation, Jeux Vidéo",
       "years": [
         { "year": "B1", "price": 7800 },
@@ -59,6 +65,7 @@
       ]
     },
     {
+      "id": 7,
       "name": "Bâtiment Numérique",
       "years": [
         { "year": "B3", "price": 8300 },
@@ -67,6 +74,7 @@
       ]
     },
     {
+      "id": 8,
       "name": "Intelligence Artificielle & Data",
       "years": [
         { "year": "B1", "price": 7800 },
@@ -77,6 +85,7 @@
       ]
     },
     {
+      "id": 9,
       "name": "Marketing & Communication Digitale",
       "years": [
         { "year": "B1", "price": 7200 },
@@ -87,6 +96,7 @@
       ]
     },
     {
+      "id": 10,
       "name": "Tech & Business",
       "years": [
         { "year": "B1", "price": 7200 },
