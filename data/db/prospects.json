@@ -1,0 +1,20 @@
+{
+  "prospects": [
+    {
+      "firstName": "Jane",
+      "lastName": "Doe",
+      "sectorWatched": "Cybersécurité",
+      "email": "jane.doe@example.com",
+      "phone": "+33612345678",
+      "city": "Toulouse"
+    },
+    {
+      "firstName": "John",
+      "lastName": "Smith",
+      "sectorWatched": "Informatique",
+      "email": "john.smith@example.com",
+      "phone": "+33612345678",
+      "city": "Montaudran"
+    }
+  ]
+}
