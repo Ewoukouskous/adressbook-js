@@ -1,6 +1,47 @@
 require('dotenv').config();
 const readJsonFile = require("./readJsonFile.js");
 
+/* Function that will analyse and sanitize a prospect object before adding it to the database
+if the prospect is invalid we return an error message else we return the sanatized prospect object */
+function analyseAndSanitizeProspect(prospect) {
+    const sectorsCRUD = require("./sectorsCRUD.js");
+
+    // Check that all fields are not null or undefined.
+    for (const key in prospect) {
+        if ((prospect[key] === null || prospect[key] === undefined) && key !== 'id') {
+            return new Error(`Field ${key} is required`);
+        }
+    }
+
+    // Check that firstName, lastName and city are strings
+    if (typeof prospect.firstName !== 'string' || typeof prospect.lastName !== 'string' || typeof prospect.city !== 'string') {
+        return new Error('First name, last name and city must be strings');
+    }
+    // Capitalize first letter of firstName, lastName and city
+    prospect.firstName = prospect.firstName[0].toUpperCase() + prospect.firstName.slice(1).toLowerCase();
+    prospect.lastName = prospect.lastName[0].toUpperCase() + prospect.lastName.slice(1).toLowerCase();
+    prospect.city = prospect.city[0].toUpperCase() + prospect.city.slice(1).toLowerCase();
+
+    // Check that sectorWatchedId is a number and corresponds to an existing sector
+    const sectorId = parseInt(prospect.sectorWatchedId);
+    if (isNaN(sectorId) || !sectorsCRUD.getSectorById(sectorId)) {
+        return new Error('Invalid sectorWatchedId');
+    }
+
+    // Check that email is a valid email
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(prospect.email)) {
+        return new Error('Invalid email format');
+    }
+
+    // Check that phone is a valid phone number (french format +33 6 or +33 7)
+    const phoneRegex = /^\+33[67]\d{8}$/;
+    if (!phoneRegex.test(prospect.phone)) {
+        return new Error('Invalid phone format. Use +33 6XXXXXXXX or +33 7XXXXXXXX');
+    }
+}
+
+
 /* ==================================================
                      GETS CRUDS
 ===================================================== */
@@ -10,7 +51,7 @@ function getAllProspects() {
     if (prospectsData) {
         return prospectsData.prospects;
     } else {
-        console.error("Prospects data not found");
+        console.error("PROSPECT GET ALL LOG: ERROR Prospects data not found");
         return null;
     }
 }
@@ -19,7 +60,7 @@ function getProspectById(id) {
     // Ensure the id is a number
     const prospectId = parseInt(id);
     if (isNaN(prospectId)) {
-        console.error("Prospect id is not a number:", id);
+        console.error("PROSPECT GET BY ID LOG: ERROR Prospect id is not a number:", id);
         return null;
     }
 
@@ -35,4 +76,28 @@ function getProspectById(id) {
 /* ==================================================
 ===================================================== */
 
-module.exports = {getAllProspects, getProspectById};
+function createProspect(prospect) {
+    const fs = require('fs');
+    const filePath = process.env.PROSPECTS_DB_PATH;
+    try {
+        // We start by getting the full JSON file
+        const oldJsonData = readJsonFile(filePath);
+        // If there is no old data, we return null
+        if (!oldJsonData) {
+            return null;
+        }
+
+        // We add the new json data to the old one.
+        oldJsonData.prospects.push(prospect);
+
+        // We write the updated data back to the file
+        fs.writeFileSync(filePath, JSON.stringify(oldJsonData, null, 2), 'utf8');
+        console.log(`PROSPECT CREATION LOG: Successfully wrote data to ${filePath}`);
+
+    } catch (err) {
+        console.error(`PROSPECT CREATION LOG: Error writing JSON file at ${filePath}:`, err);
+        return null;
+    }
+}
+
+module.exports = {getAllProspects, getProspectById, createProspect, analyseAndSanitizeProspect};
