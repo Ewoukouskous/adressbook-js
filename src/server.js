@@ -14,6 +14,18 @@ const port = process.env.PORT || 8080;
 // Middleware to parse JSON bodies
 app.use(express.json());
 
+// Express error middleware for JSON syntax errors
+app.use((err, req, res, next) => {
+    // Check that it's a syntax error present in the body
+    if (err instanceof SyntaxError && err.status === 400 && 'body' in err) {
+        return res.status(400).json({
+            error: 'Malformed JSON',
+            message: 'The JSON syntax is incorrect.',
+        });
+    }
+    next(err);
+});
+
 // Log Middleware
 app.use((req, res, next) => {
     if (req.url !== '/favicon.ico' && !req.url.startsWith('/script/') && !req.url.startsWith('/assets/')) {
