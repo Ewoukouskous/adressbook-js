@@ -10,6 +10,7 @@
 2. ▶️ [Demo](#demo)
 3. 🛠️ [How to use](#how-to-use)  
     3.1 🧰 [Dependencies](#dependencies)
+
     3.2 🔧 [environment variables](#environment-variables)
 4. 🛜 [Run the server](#run-the-server)
 5. 🗃️ [File Architecture](#file-architecture)
