@@ -87,6 +87,8 @@ PROSPECTS_DB_PATH=./data/db/prospects.json
 SECTORS_DB_PATH=./data/db/sectors.json
 ```
 
+> ❗These variables must be private and should absolutely not be pushed or shared with anybody
+
 ---
 
 ## <a name="run-the-server"> 🛜 Run the server </a>
@@ -135,6 +137,7 @@ adressbook-js/
 │   │   ├── prospectsCRUD.js
 │   │   ├── readJsonFile.js
 │   │   └── sectorsCRUD.js
+|   └── apiRoutes.js
 │   └── server.js
 ├── .env
 ├── LICENSE
