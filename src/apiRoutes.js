@@ -29,10 +29,10 @@ router.get('/sectors', (req, res) => {
 });
 
 router.get('/prospects', (req, res) => {
-    // If there is an id query param, get the sector by id
     const searchId = req.query.id;
     const sectorId = req.query.sectorId;
 
+    // If there is an id query param, get the prospect by id
     if (searchId) {
         const prospectData = prospectsCRUD.getProspectById(searchId);
         if (!(prospectData instanceof Error)) {
@@ -40,7 +40,7 @@ router.get('/prospects', (req, res) => {
         } else {
             return res.status(prospectData.statusCode).send(prospectData.message);
         }
-    } else if (sectorId) {
+    } else if (sectorId) { // If there is a sectorId query param, get prospects by sectorId (NOT USED FOR NOW BUT WILL BE USEFUL FOR FILTERING)
         const prospectsData = prospectsCRUD.getProspectsBySectorId(sectorId);
         if (!(prospectsData instanceof Error)) {
             res.json(prospectsData);
