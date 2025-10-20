@@ -1,4 +1,5 @@
-// ui.js
+// ui.js: Contains references to all relevant UI elements
+
 export const UI = {
     tbody: document.getElementById("prospectsBody"),
 
@@ -8,12 +9,12 @@ export const UI = {
     closeAddBtn: document.getElementById("closeAddModal"),
     addForm: document.getElementById("addForm"),
     addFields: {
-        LastName: document.getElementById("addLastName"),
-        Name: document.getElementById("addFirstName"),
-        Email: document.getElementById("addEmail"),
-        Phone: document.getElementById("addPhone"),
-        Address: document.getElementById("addAddress"),
-        Sectors: document.getElementById("addSectors"),
+        lastName: document.getElementById("addLastName"),
+        firstName: document.getElementById("addFirstName"),
+        email: document.getElementById("addEmail"),
+        phone: document.getElementById("addPhone"),
+        city: document.getElementById("addCity"),
+        sectorWatchedId: document.getElementById("addSectors"),
     },
 
     // Update modal
@@ -21,12 +22,12 @@ export const UI = {
     closeUpdateBtn: document.getElementById("closeUpdateModal"),
     updateForm: document.getElementById("updateForm"),
     updateFields: {
-        LastName: document.getElementById("updateLastName"),
-        Name: document.getElementById("updateFirstName"),
-        Email: document.getElementById("updateEmail"),
-        Phone: document.getElementById("updatePhone"),
-        Address: document.getElementById("updateAddress"),
-        Sectors: document.getElementById("updateSectors"),
+        lastName: document.getElementById("updateLastName"),
+        firstName: document.getElementById("updateFirstName"),
+        email: document.getElementById("updateEmail"),
+        phone: document.getElementById("updatePhone"),
+        city: document.getElementById("updateCity"),
+        sectorWatchedId: document.getElementById("updateSectors"),
     },
 
     // Delete modal

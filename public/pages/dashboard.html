@@ -36,8 +36,8 @@
                 <th class="px-6 py-3">First Name</th>
                 <th class="px-6 py-3">Email</th>
                 <th class="px-6 py-3">Phone</th>
-                <th class="px-6 py-3">Address</th>
-                <th class="px-6 py-3">Sectors</th>
+                <th class="px-6 py-3">City</th>
+                <th class="px-6 py-3">Sector</th>
                 <th class="px-6 py-3 text-center">Actions</th>
             </tr>
             </thead>
@@ -62,9 +62,15 @@
             <input id="addLastName" type="text" placeholder="Last Name" class="border border-blue-300 rounded p-2" required>
             <input id="addFirstName" type="text" placeholder="First Name" class="border border-blue-300 rounded p-2" required>
             <input id="addEmail" type="email" placeholder="Email" class="border border-blue-300 rounded p-2" required>
-            <input id="addPhone" type="tel" placeholder="Phone" class="border border-blue-300 rounded p-2">
-            <input id="addAddress" type="text" placeholder="Address" class="border border-blue-300 rounded p-2">
-            <input id="addSectors" type="text" placeholder="Sectors" class="border border-blue-300 rounded p-2">
+            <div class="relative flex items-center border border-blue-300 rounded">
+                <span class="text-gray-500 pl-2 pr-1">+33</span>
+                <input id="addPhone" type="tel" placeholder="6 XX XX XX XX" class="p-2 flex-grow border-none focus:outline-none">
+            </div>
+            <input id="addCity" type="text" placeholder="City" class="border border-blue-300 rounded p-2">
+            <select id="addSectors" class="border border-blue-300 rounded p-2" required>
+                <option value="" disabled selected>Choose a sector</option>
+                <!-- Options will be added automaticaly in js -->
+            </select>
             <button type="submit" class="bg-blue-600 text-white rounded p-2 hover:bg-blue-700">Save</button>
         </form>
         <button id="closeAddModal" class="mt-4 text-blue-600 hover:underline">Close</button>
@@ -79,9 +85,15 @@
             <input id="updateLastName" type="text" class="border border-blue-300 rounded p-2" required>
             <input id="updateFirstName" type="text" class="border border-blue-300 rounded p-2" required>
             <input id="updateEmail" type="email" class="border border-blue-300 rounded p-2" required>
-            <input id="updatePhone" type="text" class="border border-blue-300 rounded p-2">
-            <input id="updateAddress" type="text" class="border border-blue-300 rounded p-2">
-            <input id="updateSectors" type="text" class="border border-blue-300 rounded p-2">
+            <div class="relative flex items-center border border-blue-300 rounded">
+                <span class="text-gray-500 pl-2 pr-1">+33</span>
+                <input id="updatePhone" type="tel" placeholder="6 XX XX XX XX" class="p-2 flex-grow border-none focus:outline-none">
+            </div>
+            <input id="updateCity" type="text" class="border border-blue-300 rounded p-2">
+            <select id="updateSectors" class="border border-blue-300 rounded p-2" required>
+                <option value="" disabled selected>Choose a sector</option>
+                <!-- Options will be added automaticaly in js -->
+            </select>
             <button type="submit" class="bg-blue-600 text-white rounded p-2 hover:bg-blue-700">Update</button>
         </form>
         <button id="closeUpdateModal" class="mt-4 text-blue-600 hover:underline">Close</button>
@@ -102,6 +114,7 @@
 
 <!-- Scripts -->
 <script type="module" src="/script/main.js"></script>
+
 
 </body>
 </html>
