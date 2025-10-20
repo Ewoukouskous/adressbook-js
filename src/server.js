@@ -118,7 +118,7 @@ app.post('/api/create-prospect', (req, res) => {
     // Create the new prospect
     const creationResult = prospectsCRUD.createProspect(newProspect);
     if (creationResult === null) {
-        return res.status(500).send('Error creating prospect');
+        return res.status(500).send('PROSPECT CREATION LOG: Error creating prospect');
     } else {
         console.log("PROSPECT CREATION LOG: New prospect created with ID " + newProspect.id);
         return res.status(201).json(newProspect);

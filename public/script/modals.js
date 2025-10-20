@@ -102,7 +102,7 @@ export function handleAddSubmit(e) {
         hide(UI.addModal);
     }).catch(error => {
         console.error("Error adding prospect:", error);
-        alert("An error occurred while adding the prospect. Please try again.");
+        alert(error.message);
     });
 
 }
@@ -230,7 +230,7 @@ export function handleUpdateSubmit(e) {
             })
             .catch((error) => {
                 console.error("Error updating prospect:", error);
-                alert("An error occurred while updating the prospect. Please try again.");
+                alert(error.message);
             });
     } else {
         console.log("No changes detected, skipping update.");
@@ -259,6 +259,6 @@ export function handleConfirmDelete() {
         })
         .catch((error) => {
             console.error("Error deleting prospect:", error);
-            alert("An error occurred while deleting the prospect. Please try again.");
+            alert(error.message);
         });
 }

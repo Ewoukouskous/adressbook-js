@@ -29,7 +29,9 @@ export function addProspect(newProspect) {
     })
         .then(response => { // Then handle the response (check for errors)
             if (!response.ok) { // If response is not in 200-299 range, throw an error
-                throw new Error(`HTTP Error: ${response.status}`);
+                return response.text().then(errorMessage => {
+                    throw new Error(`API HTTP Error: ${response.status}\n[${errorMessage}]`);
+                });
             }
             return response.json();
         })
@@ -54,7 +56,9 @@ export function updateProspect(prospectId, updatedData) {
     })
         .then(response => { // Then handle the response (check for errors)
             if (!response.ok) { // If response is not in 200-299 range, throw an error
-                throw new Error(`HTTP Error: ${response.status} : ${response.body}`);
+                return response.text().then(errorMessage => {
+                    throw new Error(`API HTTP Error: ${response.status}\n[${errorMessage}]`);
+                });
             }
             return response.json();
         })
@@ -78,7 +82,9 @@ export function deleteProspect(prospectId) {
     })
         .then(response => { // Then handle the response (check for errors)
             if (!response.ok) {
-                throw new Error(`HTTP Error: ${response.status} : ${response.body}`);
+                return response.text().then(errorMessage => {
+                    throw new Error(`API HTTP Error: ${response.status}\n[${errorMessage}]`);
+                });
             }
         })
         .then(() => {
