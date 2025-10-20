@@ -17,7 +17,11 @@ app.use(express.json());
 
 // Log Middleware
 app.use((req, res, next) => {
-    console.log(`[${req.method}] ${req.url}`);
+    if (req.url !== '/favicon.ico' && !req.url.startsWith('/script/') && !req.url.startsWith('/assets/')) {
+        console.log(`[${req.method}] ${req.url}`);
+        next();
+        return;
+    }
     next();
 });
 
