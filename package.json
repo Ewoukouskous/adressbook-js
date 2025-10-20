@@ -11,5 +11,9 @@
     "type": "git",
     "url": "https://github.com/Ewoukouskous/adressbook-js.git"
   },
-  "private": true
+  "private": true,
+  "devDependencies": {
+    "dotenv": "^17.2.3",
+    "express": "^5.1.0"
+  }
 }
