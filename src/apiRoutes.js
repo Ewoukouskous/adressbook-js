@@ -1,4 +1,3 @@
-
 // IMPORTS
 const express = require('express');
 const router = express.Router();
@@ -36,26 +35,26 @@ router.get('/prospects', (req, res) => {
 
     if (searchId) {
         const prospectData = prospectsCRUD.getProspectById(searchId);
-        if (prospectData) {
+        if (!(prospectData instanceof Error)) {
             res.json(prospectData);
         } else {
-            return res.status(404).send('Prospect not found');
+            return res.status(prospectData.statusCode).send(prospectData.message);
         }
     } else if (sectorId) {
         const prospectsData = prospectsCRUD.getProspectsBySectorId(sectorId);
-        if (prospectsData) {
+        if (!(prospectsData instanceof Error)) {
             res.json(prospectsData);
         } else {
-            return res.status(404).send('No prospects found for the given sectorWatchedId');
+            return res.status(prospectsData.statusCode).send(prospectsData.message);
         }
     }
     // If there is no id query param, get all prospects
     else {
         const prospectsData = prospectsCRUD.getAllProspects()
-        if (prospectsData) {
+        if (!(prospectsData instanceof Error)) {
             res.json(prospectsData);
         } else {
-            return res.status(404).send('Prospects data not found');
+            return res.status(prospectsData.statusCode).send(prospectsData.message);
         }
     }
 });
@@ -83,7 +82,7 @@ router.post('/create-prospect', (req, res) => {
 
     if (sanitizedProspect instanceof Error) {
         console.error('PROSPECT CREATION LOG: ERROR while analysing the new prospect: ' + sanitizedProspect.message)
-        return res.status(400).send(sanitizedProspect.message);
+        return res.status(sanitizedProspect.statusCode).send(sanitizedProspect.message);
     }
 
     // Once we are sure that the prospect is valid, we can proceed to create it
@@ -93,11 +92,11 @@ router.post('/create-prospect', (req, res) => {
 
     // Create the new prospect
     const creationResult = prospectsCRUD.createProspect(newProspect);
-    if (creationResult === null) {
-        return res.status(500).send('PROSPECT CREATION LOG: Error creating prospect');
-    } else {
+    if (!(creationResult instanceof Error)) {
         console.log("PROSPECT CREATION LOG: New prospect created with ID " + newProspect.id);
         return res.status(201).json(newProspect);
+    } else {
+        return res.status(creationResult.statusCode).send(creationResult.message);
     }
 
 });
@@ -116,7 +115,7 @@ router.delete('/delete-prospect', (req, res) => {
         console.log(`PROSPECT DELETION LOG: Prospect with ID ${prospectId} deleted successfully.`);
         return res.status(200).send(`Prospect with ID ${prospectId} deleted successfully.`);
     } else {
-        return res.status(500).send(deletionResult.message);
+        return res.status(deletionResult.statusCode).send(deletionResult.message);
     }
 
 });
@@ -132,12 +131,12 @@ router.patch('/update-prospect', (req, res) => {
     // Proceed to update the prospect and check if the update was successful
     const updateProspect = prospectsCRUD.updateProspectById(prospectId, req.body);
 
-    if (updateProspect instanceof Error) {
-        console.error('PROSPECT UPDATE LOG: ERROR while updating the prospect: ' + updateProspect.message)
-        return res.status(500).send(updateProspect.message);
-    } else {
+    if (!(updateProspect instanceof Error)) {
         console.log(`PROSPECT UPDATE LOG: Prospect with ID ${prospectId} updated successfully.`);
         return res.status(200).json(updateProspect);
+    } else {
+        console.error('PROSPECT UPDATE LOG: ERROR while updating the prospect: ' + updateProspect.message)
+        return res.status(updateProspect.statusCode).send(updateProspect.message);
     }
 
 });
