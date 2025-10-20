@@ -2,7 +2,6 @@
 import {UI} from "./ui.js";
 import {
     openAddModal,
-    closeAddModal,
     handleAddSubmit,
     closeUpdateModal,
     handleUpdateSubmit,
@@ -11,6 +10,7 @@ import {
 } from "./modals.js";
 import {displayProspects} from "./table.js";
 import {sectors} from "./main.js";
+import {hide} from "./utils.js";
 
 // Populate sectors dropdown in add and update modals (called on init)
 function populateSectorsDropdown() {
@@ -47,7 +47,7 @@ export function initEvents() {
 
     // Add
     UI.openAddBtn.addEventListener("click", openAddModal);
-    UI.closeAddBtn.addEventListener("click", closeAddModal);
+    UI.closeAddBtn.addEventListener("click", () => hide(UI.addModal));
     UI.addForm.addEventListener("submit", handleAddSubmit);
 
     // Update

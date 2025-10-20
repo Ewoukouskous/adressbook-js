@@ -48,10 +48,6 @@ export function openAddModal() {
     show(UI.addModal);
 }
 
-export function closeAddModal() {
-    hide(UI.addModal);
-}
-
 // Handle Add Submit (with validation)
 export function handleAddSubmit(e) {
     e.preventDefault();
@@ -103,7 +99,7 @@ export function handleAddSubmit(e) {
     addProspect(newProspect).then(data => {
         console.log("Prospect added:", data);
         displayProspects();
-        closeAddModal();
+        hide(UI.addModal);
     }).catch(error => {
         console.error("Error adding prospect:", error);
         alert("An error occurred while adding the prospect. Please try again.");
