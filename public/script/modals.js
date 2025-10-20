@@ -93,7 +93,7 @@ export function handleAddSubmit(e) {
     if (!isValid) return;
 
     // Add +33 prefix to phone number
-    newProspect.phone = "+33" + newProspect.phone;
+    newProspect.phone = "+33" + newProspect.phone.replace(/\s/g, '');
 
     // Call the addProspect function, which returns a promise then handle success and error
     addProspect(newProspect).then(data => {
@@ -160,7 +160,8 @@ export function handleUpdateSubmit(e) {
 
         // Spécial case for the phone field
         if (key === 'phone') {
-            const formattedPhone = "+33" + value; // Add +33 prefix for comparison
+            // Add +33 prefix for comparison and remove spaces
+            const formattedPhone = "+33" + value.replace(/\s/g, '');
             if (formattedPhone !== originalProspect.phone) {
                 updatedData[key] = formattedPhone;
                 hasChanges = true;

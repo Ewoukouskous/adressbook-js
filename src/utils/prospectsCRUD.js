@@ -1,5 +1,6 @@
 require('dotenv').config();
 const readJsonFile = require("./readJsonFile.js");
+const {createError} = require("./createError.js");
 const {getSectorById} = require("./sectorsCRUD");
 
 /* Function that will analyse and sanitize a prospect object before adding it to the database
@@ -8,13 +9,13 @@ function analyseAndSanitizeProspect(prospect) {
     // Check that all fields are not null or undefined.
     for (const key in prospect) {
         if ((prospect[key] === null || prospect[key] === undefined) && key !== 'id') {
-            return new Error(`Field ${key} is required`);
+            return createError(400, `Field ${key} is required`);
         }
     }
 
     // Check that firstName, lastName and city are strings
     if (typeof prospect.firstName !== 'string' || typeof prospect.lastName !== 'string' || typeof prospect.city !== 'string') {
-        return new Error('First name, last name and city must be strings');
+        return createError(400, 'First name, last name and city must be strings');
     }
     // Capitalize first letter of firstName, lastName and city
     prospect.firstName = prospect.firstName[0].toUpperCase() + prospect.firstName.slice(1).toLowerCase();
@@ -23,27 +24,27 @@ function analyseAndSanitizeProspect(prospect) {
 
     // Check that sectorWatchedId is a number and corresponds to an existing sector
     if (getSectorById(prospect.sectorWatchedId) == null){
-        return new Error('sectorWatchedId does not correspond to an existing sector');
+        return createError(404, 'sectorWatchedId does not correspond to an existing sector');
     }
 
     // Check that email is a valid email
     if (verifyEmail(prospect.email) instanceof Error) {
-        return new Error('Invalid email format');
+        return createError(400, 'Invalid email format');
     }
 
     // Check that email is unique
     if (verifyEmailUniqueness(prospect.email) instanceof Error) {
-        return new Error('Email already exists in the database');
+        return createError(400, 'Email already exists in the database');
     }
 
     // Check that phone is a valid phone number (french format +33 6 or +33 7)
     if (verifyPhone(prospect.phone) instanceof Error) {
-        return new Error('Invalid phone format. Use +33 6XXXXXXXX or +33 7XXXXXXXX');
+        return createError(400, 'Invalid phone format. Use +33 6XXXXXXXX or +33 7XXXXXXXX');
     }
 
     // Check that phone is unique
     if (verifyPhoneUniqueness(prospect.phone) instanceof Error) {
-        return new Error('Phone number already exists in the database');
+        return createError(400, 'Phone number already exists in the database');
     }
 }
 
@@ -67,7 +68,7 @@ function verifyEmail(email) {
     // Check that email is a valid email
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(email)) {
-        return new Error('Invalid email format');
+        return createError(400, 'Invalid email format');
     }
 }
 
@@ -76,7 +77,7 @@ function verifyEmailUniqueness(email) {
     const allProspects = getAllProspects();
     let doesExist = allProspects.find(prospect => prospect.email === email);
     if (doesExist) {
-        return new Error('Email already exists in the database');
+        return createError(400, 'Email already exists in the database');
     }
 }
 
@@ -85,7 +86,7 @@ function verifyPhone(phone) {
     // Check that phone is a valid phone number (french format +33 6 or +33 7)
     const phoneRegex = /^\+33[67]\d{8}$/;
     if (!phoneRegex.test(phone)) {
-        return new Error('Invalid phone format. Use +33 6XXXXXXXX or +33 7XXXXXXXX');
+        return createError(400, 'Invalid phone format. Use +33 6XXXXXXXX or +33 7XXXXXXXX');
     }
 }
 
@@ -93,7 +94,7 @@ function verifyPhoneUniqueness(phone) {
     const allProspects = getAllProspects();
     let doesExist = allProspects.find(prospect => prospect.phone === phone);
     if (doesExist) {
-        return new Error('Phone number already exists in the database');
+        return createError(400, 'Phone number already exists in the database');
     }
 }
 
@@ -109,7 +110,7 @@ function getAllProspects() {
         return prospectsData.prospects;
     } else {
         console.error("PROSPECT GET ALL LOG: ERROR Prospects data not found");
-        return null;
+        return createProspect(404, 'Prospects data not found');
     }
 }
 
@@ -118,7 +119,7 @@ function getProspectById(id) {
     const prospectId = parseInt(id);
     if (isNaN(prospectId)) {
         console.error("PROSPECT GET BY ID LOG: ERROR Prospect id is not a number:", id);
-        return null;
+        return createError(400, 'Prospect id is not a number');
     }
 
     // Read the specified prospect data
@@ -126,7 +127,10 @@ function getProspectById(id) {
     // Check if the prospect exists, if not return null
     if (prospectsData) {
         return prospectsData;
-    } else return null;
+    } else {
+        console.error(`PROSPECT GET BY ID LOG: ERROR Prospect with id ${id} not found`);
+        return createError(404, `Prospect with id ${id} not found`);
+    }
 }
 
 function getProspectsBySectorId(sectorId) {
@@ -134,7 +138,7 @@ function getProspectsBySectorId(sectorId) {
     const prospectSectorId = parseInt(sectorId);
     if (isNaN(prospectSectorId)) {
         console.error("PROSPECT GET BY SECTOR ID LOG: ERROR Sector id is not a number:", sectorId);
-        return null;
+        return createError(400, 'Sector id is not a number');
     }
 
     // Read the specified prospect data
@@ -142,7 +146,7 @@ function getProspectsBySectorId(sectorId) {
     // Check if the prospect exists, if not return null
     if (prospectsData) {
         return prospectsData;
-    } else return null;
+    } else return createError(404, `Prospect with id ${prospectSectorId} not found`);
 }
 
 /* ==================================================
@@ -156,7 +160,8 @@ function createProspect(prospect) {
         const oldJsonData = readJsonFile(filePath);
         // If there is no old data, we return null
         if (!oldJsonData) {
-            return null;
+            console.error('PROSPECT CREATION LOG: ERROR Prospects data not found');
+            return createError(500, 'Prospects JSON data not found');
         }
 
         // We add the new json data to the old one.
@@ -168,7 +173,7 @@ function createProspect(prospect) {
 
     } catch (err) {
         console.error(`PROSPECT CREATION LOG: Error writing JSON file at ${filePath}:`, err);
-        return null;
+        return createError(500, 'Error writing JSON file');
     }
 }
 
@@ -179,7 +184,7 @@ function deleteProspectById(id) {
 
     if (isNaN(prospectId)) {
         console.error("PROSPECT DELETION LOG: ERROR Prospect id is not a number:", id);
-        return new Error('PROSPECT DELETION LOG: Prospect id is not a number');
+        return createError(400, 'Prospect id is not a number');
     }
 
     try {
@@ -188,7 +193,7 @@ function deleteProspectById(id) {
         // If there is no old data, we return an error
         if (!oldJsonData) {
             console.error('PROSPECT DELETION LOG: ERROR Prospects data not found');
-            return new Error('PROSPECT DELETION LOG: Prospects data not found');
+            return createError(404, 'Prospects data not found');
         }
 
         // We remove the new json data to the old one.
@@ -198,7 +203,7 @@ function deleteProspectById(id) {
         // If the prospect index is not found 'findIndex' returns -1
         if (prospectIndex === -1) {
             console.error(`PROSPECT DELETION LOG: ERROR Prospect with id ${id} not found`);
-            return new Error(`PROSPECT DELETION LOG: Prospect with id ${id} not found`);
+            return createError(404, 'Prospect with id ${id} not found');
         }
 
         // We write the updated data back to the file
@@ -208,7 +213,7 @@ function deleteProspectById(id) {
 
     } catch (err) {
         console.error(`PROSPECT DELETION LOG: Error writing JSON file at ${filePath}:`, err);
-        return new Error(`PROSPECT DELETION LOG: Error writing JSON file at ${filePath}: ${err.message}`);
+        return createError(500, 'Error writing JSON file');
     }
 }
 
@@ -219,7 +224,7 @@ function updateProspectById(prospectId, prospectData) {
 
     if (isNaN(prospectId)) {
         console.error("PROSPECT UPDATE LOG: ERROR Prospect id is not a number:", prospectId);
-        return new Error('PROSPECT UPDATE LOG: Prospect id is not a number');
+        return createError(404, 'Prospect id is not a number');
     }
 
     // We start by getting the full JSON file
@@ -227,27 +232,27 @@ function updateProspectById(prospectId, prospectData) {
     // If there is no old data, we return an error
     if (!oldJsonData) {
         console.error('PROSPECT UPDATE LOG: ERROR Prospects data not found');
-        return new Error('PROSPECT UPDATE LOG: Prospects data not found');
+        return createError(500, 'Prospects JSON data not found');
     }
 
     // We start by getting the prospect data to update
     let prospectToUpdate = oldJsonData.prospects.find(prospect => prospect.id === prospectId);
     if (!prospectToUpdate) {
         console.error(`PROSPECT UPDATE LOG: ERROR Prospect with id ${prospectId} not found`);
-        return new Error(`PROSPECT UPDATE LOG: Prospect with id ${prospectId} not found`);
+        return createError(404, `Prospect with id ${prospectId} not found`);
     }
 
     for (const field of fieldsUpdatable) {
         if (prospectData.hasOwnProperty(field)) {
 
             if (prospectData[field] === prospectToUpdate[field]) {
-                return new Error (`Field ${field} is the same as the current value`);
+                return createError(400, `Field ${field} is the same as the current value`);
             }
 
             // If the current field is not 'sectorWatchedId', we check that it's a string and do other sanitizations
             if (field !== 'sectorWatchedId') {
                 if (typeof prospectData[field] !== 'string') {
-                    return new Error(`Field ${field} must be a string`);
+                    return createError(400, `Field ${field} is the same as the current value`);
                 }
 
                 // Perform any necessary validation or sanitization here
@@ -260,19 +265,19 @@ function updateProspectById(prospectId, prospectData) {
                         continue;
                     case 'email':
                         if (verifyEmail(prospectData[field]) instanceof Error) {
-                            return new Error('Invalid email format');
+                            return createError(400, 'Invalid email format');
                         }
                         if (verifyEmailUniqueness(prospectData[field]) instanceof Error) {
-                            return new Error('Email already exists in the database');
+                            return createError(400, 'Email already exists in the database');
                         }
                         prospectToUpdate[field] = prospectData[field];
                         continue;
                     case 'phone':
                         if (verifyPhone(prospectData[field]) instanceof Error) {
-                            return new Error('Invalid phone format. Use +33 6XXXXXXXX or +33 7XXXXXXXX');
+                            return createError(400, 'Invalid phone format. Use +33 6XXXXXXXX or +33 7XXXXXXXX');
                         }
                         if (verifyPhoneUniqueness(prospectData[field]) instanceof Error) {
-                            return new Error('Phone number already exists in the database');
+                            return createError(400, `Phone number already exists in the database`);
                         }
                         prospectToUpdate[field] = prospectData[field];
                         continue;
@@ -282,7 +287,7 @@ function updateProspectById(prospectId, prospectData) {
             } else {
                 // Check that sectorWatchedId corresponds to an existing sector
                 if (getSectorById(prospectData[field]) == null){
-                    return new Error('sectorWatchedId does not correspond to an existing sector');
+                    return createError(404, 'sectorWatchedId does not correspond to an existing sector');
                 }
                 // Parse it to an integer (it comes as a string from the request body)
                 prospectToUpdate[field] = parseInt(prospectData[field]);
@@ -304,7 +309,7 @@ function updateProspectById(prospectId, prospectData) {
 
     } catch (err) {
         console.error(`PROSPECT UPDATE LOG: Error writing JSON file at ${filePath}:`, err);
-        return new Error(`PROSPECT UPDATE LOG: Error writing JSON file at ${filePath}: ${err.message}`);
+        return createError(500, 'Error writing JSON file for update');
     }
 }
 
