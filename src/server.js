@@ -4,14 +4,13 @@ require('dotenv').config();
 // IMPORTS
 const express = require('express');
 const path = require('path');
-const sectorsCRUD = require('../utils/sectorsCRUD.js');
-const prospectsCRUD = require('../utils/prospectsCRUD.js');
+const sectorsCRUD = require('./utils/sectorsCRUD.js');
+const prospectsCRUD = require('./utils/prospectsCRUD.js');
 
 // VARIABLES
 const app = express();
 // If there's no env var, we use the 8080 port
 const port = process.env.PORT || 8080;
-const dataDb = 'data/db/data.json';
 
 // Middleware to parse JSON bodies
 app.use(express.json());
@@ -22,21 +21,13 @@ app.use((req, res, next) => {
     next();
 });
 
+// Serve statics files
+app.use(express.static(path.join(__dirname, '../public')));
+
 // Serve dashboard.html at the root URL
 app.get('/', (req, res) => {
-    res.sendFile(path.join(__dirname, '../../public/pages/dashboard.html'));
+    res.sendFile(path.join(__dirname, '../public/pages/dashboard.html'));
 });
-
-// Serve statics files
-app.use(express.static(path.join(__dirname, '../../public')));
-app.use('/script', express.static(path.join(__dirname, '../script')));
-
-
-// API route for the json data
-const data = require('../../data/db/data.json');
-const {createProspect, getAllProspects, updateProspectById} = require("../utils/prospectsCRUD");
-app.get('/data', (req, res) => res.json(data));
-
 
 // API route for the sectors data json object
 app.get('/api/sectors', (req, res) => {
@@ -99,10 +90,16 @@ app.post('/api/create-prospect', (req, res) => {
         id: null,
         firstName: req.body.firstName,
         lastName: req.body.lastName,
-        sectorWatchedId: req.body.sectorWatchedId,
         email: req.body.email,
         phone: req.body.phone,
         city: req.body.city
+    }
+
+    // Add sectorWatchedId as a number (because it comes as a string from the request body)
+    newProspect.sectorWatchedId = parseInt(req.body.sectorWatchedId);
+    if (isNaN(newProspect.sectorWatchedId)) {
+        console.error('PROSPECT CREATION LOG: ERROR - Invalid sectorWatchedId provided');
+        return res.status(400).send('Invalid sectorWatchedId provided');
     }
 
     // Sanitize and analyse the new prospect
@@ -116,10 +113,10 @@ app.post('/api/create-prospect', (req, res) => {
     // Once we are sure that the prospect is valid, we can proceed to create it
 
     // Assign an ID to the new prospect by getting the last prospect ID and adding 1
-    newProspect.id = getAllProspects()[getAllProspects().length - 1].id + 1;
+    newProspect.id = prospectsCRUD.getAllProspects()[prospectsCRUD.getAllProspects().length - 1].id + 1;
 
     // Create the new prospect
-    const creationResult = createProspect(newProspect);
+    const creationResult = prospectsCRUD.createProspect(newProspect);
     if (creationResult === null) {
         return res.status(500).send('Error creating prospect');
     } else {
@@ -157,7 +154,7 @@ app.patch('/api/update-prospect', (req, res) => {
     }
 
     // Proceed to update the prospect and check if the update was successful
-    const updateProspect = updateProspectById(prospectId, req.body);
+    const updateProspect = prospectsCRUD.updateProspectById(prospectId, req.body);
 
     if (updateProspect instanceof Error) {
         console.error('PROSPECT UPDATE LOG: ERROR while updating the prospect: ' + updateProspect.message)
