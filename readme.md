@@ -167,9 +167,179 @@ relevant data.
 database, ensuring that outdated or unnecessary information can be 
 efficiently cleaned up.
 
-By utilizing these four commands, the application ensures seamless
-communication with the API while maintaining a simple and efficient 
-workflow for managing prospect data.
+This API manages **prospects** stored in a local JSON database.  
+Each prospect record includes contact and business information linked to a specific sector.
+
+---
+
+| Field             | Type   | Required  | Description |
+|-------------------|--------|-----------|-------------|
+| `id`              | number | auto      | Unique identifier for each prospect |
+| `firstName`       | string | ✅         | Prospect’s first name |
+| `lastName`        | string | ✅         | Prospect’s last name |
+| `sectorWatchedId` | number | ✅         | ID of the watched sector (must exist in `sectors`) |
+| `email`           | string | ✅         | Unique, valid email address |
+| `phone`           | string | ✅         | French phone format (`+33 6XXXXXXXX` or `+33 7XXXXXXXX`) |
+| `city`            | string | ✅         | City name |
+
+---
+
+### 🟩 GET `/api/prospects`
+
+**Purpose:**
+Retrieve all prospects from the database.
+
+**Example request:**
+```bash
+curl -X GET http://localhost:8080/api/prospects
+```
+
+Response (200 – OK):
+
+```json
+[
+  {
+    "id": 1,
+    "firstName": "Alice",
+    "lastName": "Durand",
+    "sectorWatchedId": 2,
+    "email": "alice.durand@example.com",
+    "phone": "+33612345678",
+    "city": "Paris"
+  },
+  {
+    "id": 2,
+    "firstName": "Jean",
+    "lastName": "Martin",
+    "sectorWatchedId": 3,
+    "email": "jean.martin@example.com",
+    "phone": "+33787654321",
+    "city": "Lyon"
+  }
+]
+```
+
+**Possible error codes:**
+
+500 – JSON file not found or corrupted.
+
+### 🟦 POST `/api/prospects`
+
+**Purpose:**
+Add a new prospect after validation and sanitization (via analyseAndSanitizeProspect()).
+
+**Example request:**
+
+```bash
+curl -X POST http://localhost:8080/api/prospects \
+-H "Content-Type: application/json" \
+-d '{
+  "firstName": "marie",
+  "lastName": "leclerc",
+  "sectorWatchedId": 1,
+  "email": "marie.leclerc@example.com",
+  "phone": "+33699887766",
+  "city": "bordeaux"
+}'
+```
+Response (201 – Created):
+
+```json
+{
+  "message": "Prospect successfully created",
+  "prospect": {
+    "id": 3,
+    "firstName": "Marie",
+    "lastName": "Leclerc",
+    "sectorWatchedId": 1,
+    "email": "marie.leclerc@example.com",
+    "phone": "+33699887766",
+    "city": "Bordeaux"
+  }
+}
+```
+
+**Possible error codes:**
+
+400 – Missing field (Field X is required)
+
+400 – Invalid email format
+
+400 – Duplicate email or phone
+
+400 – Invalid or non-existing sectorWatchedId
+
+### 🟨 PATCH `/api/prospects/:id`
+
+**Purpose:**
+Update specific prospect information.
+Each field is validated and sanitized as needed.
+
+**Example request:**
+
+```bash
+curl -X PATCH http://localhost:8080/api/prospects/2 \
+-H "Content-Type: application/json" \
+-d '{
+  "email": "jean.martin@newmail.com",
+  "city": "marseille"
+}'
+```
+
+Response (200 – OK):
+
+```json
+{
+  "message": "Prospect successfully updated",
+  "prospect": {
+    "id": 2,
+    "firstName": "Jean",
+    "lastName": "Martin",
+    "sectorWatchedId": 3,
+    "email": "jean.martin@newmail.com",
+    "phone": "+33787654321",
+    "city": "Marseille"
+  }
+}
+```
+
+**Possible error codes:**
+
+400 – Invalid data type (Field X must be a string)
+
+400 – No changes (Field X is the same as the current value)
+
+400 – Invalid email format
+
+400 – Duplicate email or phone
+
+404 – Prospect not found
+
+### 🟥 DELETE `/api/prospects/:id`
+
+**Purpose:**
+Delete a prospect by its ID.
+
+**Example request:**
+
+```bash
+curl -X DELETE http://localhost:8080/api/prospects/2
+```
+
+Response (200 – OK):
+
+```json
+{
+  "message": "Prospect with id 2 successfully deleted"
+}
+```
+**Possible error codes:**
+
+400 – Invalid ID (Prospect id is not a number)
+
+404 – Prospect not found
+
+500 – JSON write error
 
 ### <a name="our-design"> 🔊 Our design </a>
 
