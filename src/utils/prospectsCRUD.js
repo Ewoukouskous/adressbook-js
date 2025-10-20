@@ -284,7 +284,8 @@ function updateProspectById(prospectId, prospectData) {
                 if (getSectorById(prospectData[field]) == null){
                     return new Error('sectorWatchedId does not correspond to an existing sector');
                 }
-                prospectToUpdate[field] = prospectData[field];
+                // Parse it to an integer (it comes as a string from the request body)
+                prospectToUpdate[field] = parseInt(prospectData[field]);
             }
         }
     }
