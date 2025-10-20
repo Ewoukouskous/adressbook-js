@@ -11,7 +11,6 @@ const prospectsCRUD = require('../utils/prospectsCRUD.js');
 const app = express();
 // If there's no env var, we use the 8080 port
 const port = process.env.PORT || 8080;
-const dataDb = 'data/db/data.json';
 
 // Middleware to parse JSON bodies
 app.use(express.json());
