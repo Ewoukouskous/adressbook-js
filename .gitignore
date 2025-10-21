@@ -1,0 +1,22 @@
+# Dependencies
+node_modules/
+package-lock.json
+
+# Environments variables
+.env
+.env.local
+
+# Logs
+*.log
+npm-debug.log*
+
+# JSONs DBs Files
+data/*.json
+
+# System files
+.DS_Store
+
+
+# IDE files
+.idea/*
+!.idea/.gitignore
