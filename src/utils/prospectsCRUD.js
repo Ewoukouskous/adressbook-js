@@ -193,7 +193,7 @@ function deleteProspectById(id) {
         // If there is no old data, we return an error
         if (!oldJsonData) {
             console.error('PROSPECT DELETION LOG: ERROR Prospects data not found');
-            return createError(404, 'Prospects data not found');
+            return createError(500, 'Prospects data not found');
         }
 
         // We remove the new json data to the old one.
@@ -224,7 +224,7 @@ function updateProspectById(prospectId, prospectData) {
 
     if (isNaN(prospectId)) {
         console.error("PROSPECT UPDATE LOG: ERROR Prospect id is not a number:", prospectId);
-        return createError(404, 'Prospect id is not a number');
+        return createError(400, 'Prospect id is not a number');
     }
 
     // We start by getting the full JSON file
